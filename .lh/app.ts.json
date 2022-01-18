@@ -1,0 +1,26 @@
+{
+    "sourceFile": "app.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1642500185400,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1642500196623,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n \n import { opine } from \"https://deno.land/x/opine@2.1.1/mod.ts\";\n import { TrailService } from \"./TrailService.ts\";\n import trails from \"./db.ts\";\n-import removeUndefined from \".helpers/removeUndefined.ts\";\n+import removeUndefined from \"./helpers/removeUndefined.ts\";\n \n const port = 3000;\n \n const app = opine();\n"
+                },
+                {
+                    "date": 1642500359075,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,8 +23,9 @@\n     let searchQuery = trailService.findACoolTrail({ \n         trailId: req.query.trailid, \n         length: req.query.length, \n         title: req.query.title, \n+        rating: req.query.rating,\n         coordinates: req.query.coordinates });\n     searchQuery = removeUndefined(searchQuery);\n     console.log(searchQuery);\n     res.send(await trails.find({}, {noCursorTimeout: false }).toArray());\n"
+                }
+            ],
+            "date": 1642500185400,
+            "name": "Commit-0",
+            "content": "// to run use the following cmd\n// deno run --allow-net --allow-read --allow-env app.ts\n\nimport { opine } from \"https://deno.land/x/opine@2.1.1/mod.ts\";\nimport { TrailService } from \"./TrailService.ts\";\nimport trails from \"./db.ts\";\nimport removeUndefined from \".helpers/removeUndefined.ts\";\n\nconst port = 3000;\n\nconst app = opine();\n\napp.get(\"/alltrails\", async function (req, res) {\n    res.send(await trails.find({}, { noCursorTimeout: false }).toArray())\n});\n\napp.get(\"/trailid/:trailid\", function (req, res) {\n    res.send(`trailid lautet: ${req.params.trailid}`);\n});\n\napp.get(\"/search\", async function (req, res) {\n    const trailService = new TrailService();\n    let searchQuery = trailService.findACoolTrail({ \n        trailId: req.query.trailid, \n        length: req.query.length, \n        title: req.query.title, \n        coordinates: req.query.coordinates });\n    searchQuery = removeUndefined(searchQuery);\n    console.log(searchQuery);\n    res.send(await trails.find({}, {noCursorTimeout: false }).toArray());\n    /* result \n    { trailId: undefined, length: \"2500\", title: undefined, coordinates: undefined }\n    mongo doesn't accept the undefined values\n    TODO: maybe write a function to reformat the string\n    */\n});\n\napp.set(\"/addTrail\", async function addTrail({\n    req, res,\n}: {\n    req: any;\n    res: any;\n}): Promise<void> {\n    try {\n        if (!req.hasBody) {\n            res.status = 400;\n            res.body = {\n                success: false,\n                msg: \"No Data\",\n            };\n        } else {\n            const body = await req.body();\n            const trail = await body.value;\n            await trails.insertOne(trail);\n            res.status = 201;\n            res.body = {\n                success: true,\n                data: trail,\n            };\n        }\n    } catch (err) {\n        res.body = {\n            success: false,\n            msg: err.toString(),\n        };\n    }\n});\n\napp.listen(\n    port,\n    () => console.log(`Server has started on http://localhost:${port} 🚀`),\n);"
+        }
+    ]
+}
