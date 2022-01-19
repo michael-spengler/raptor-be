@@ -6,8 +6,17 @@ import { TrailService } from "./TrailService.ts";
 import trails from "./db.ts";
 import removeUndefined from "./helpers/removeUndefined.ts";
 import { Bson } from "https://deno.land/x/bson/mod.ts";
+// for heroku
+import { serve } from "https://deno.land/std@0.57.0/http/server.ts";
+import { parse } from 'https://deno.land/std/flags/mod.ts';
 
-const port = 3000;
+const { args } = Deno;
+const DEFAULT_PORT = 3000;
+
+const argPort = parse(args).port;
+
+const s = serve({ port: argPort ? Number(argPort) : DEFAULT_PORT });
+
 
 const app = opine();
 
@@ -109,6 +118,10 @@ app.delete("/deleteTrail", async function({
   });
 
 app.listen(
-    port,
-    () => console.log(`Server has started on http://localhost:${port} 🚀`),
+    argPort,
+    () => console.log(`Server has started on http://localhost:${argPort} 🚀`),
 );
+
+for await (const req of s) {
+  req.respond({ body: "Hello World\n" });
+}
