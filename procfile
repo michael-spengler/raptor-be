@@ -1,1 +1,3 @@
 web: deno run --allow-net=:${PORT} index.ts --port=${PORT}
+
+heroku ps:scale web=1
