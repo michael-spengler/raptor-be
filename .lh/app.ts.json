@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1642500185400,
@@ -36,6 +36,10 @@
                 {
                     "date": 1642582059980,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,11 +5,20 @@\n import { TrailService } from \"./TrailService.ts\";\n import trails from \"./db.ts\";\n import removeUndefined from \"./helpers/removeUndefined.ts\";\n import { Bson } from \"https://deno.land/x/bson/mod.ts\";\n+// for heroku\n+import { serve } from \"https://deno.land/std@0.57.0/http/server.ts\";\n+import { parse } from 'https://deno.land/std/flags/mod.ts';\n \n-const port = 3000;\n+const { args } = Deno;\n+const DEFAULT_PORT = 3000;\n \n+const argPort = parse(args).port;\n+\n+const s = serve({ port: argPort ? Number(argPort) : DEFAULT_PORT });\n+\n+\n const app = opine();\n \n app.get(\"/trailid/:trailid\", async function ({\n     req,\n@@ -108,7 +117,11 @@\n     }\n   });\n \n app.listen(\n-    port,\n-    () => console.log(`Server has started on http://localhost:${port} 🚀`),\n-);\n\\ No newline at end of file\n+    argPort,\n+    () => console.log(`Server has started on http://localhost:${argPort} 🚀`),\n+);\n+\n+for await (const req of s) {\n+  req.respond({ body: \"Hello World\\n\" });\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1642689364312,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,11 +14,8 @@\n const DEFAULT_PORT = 3000;\n \n const argPort = parse(args).port;\n \n-const s = serve({ port: argPort ? Number(argPort) : DEFAULT_PORT });\n-\n-\n const app = opine();\n \n app.get(\"/trailid/:trailid\", async function ({\n     req,\n@@ -117,11 +114,7 @@\n     }\n   });\n \n app.listen(\n-    argPort,\n+    {port: argPort ?? DEFAULT_PORT},\n     () => console.log(`Server has started on http://localhost:${argPort} 🚀`),\n-);\n-\n-for await (const req of s) {\n-  req.respond({ body: \"Hello World\\n\" });\n\\ No newline at end of file\n-}\n+);\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1642500185400,

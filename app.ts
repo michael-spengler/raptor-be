@@ -15,9 +15,6 @@ const DEFAULT_PORT = 3000;
 
 const argPort = parse(args).port;
 
-const s = serve({ port: argPort ? Number(argPort) : DEFAULT_PORT });
-
-
 const app = opine();
 
 app.get("/trailid/:trailid", async function ({
@@ -118,10 +115,6 @@ app.delete("/deleteTrail", async function({
   });
 
 app.listen(
-    argPort,
+    {port: argPort ?? DEFAULT_PORT},
     () => console.log(`Server has started on http://localhost:${argPort} 🚀`),
 );
-
-for await (const req of s) {
-  req.respond({ body: "Hello World\n" });
-}
