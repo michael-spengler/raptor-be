@@ -13,64 +13,75 @@ import { parse } from 'https://deno.land/std/flags/mod.ts';
 const { args } = Deno;
 const DEFAULT_PORT = 3000;
 
-const argPort = parse(args).port;
+const port = parseInt(Deno.env.get('PORT') ?? '8000');
+const s = serve({ port });
 
 const app = opine();
 
-app.get("/trailid/:trailid", async function ({
+for await (const req of s) {
+
+  req.respond({
+    body: '<h1>raptor trails backend</h1>' +
+      '<p>&star; This is a Deno server and runs now (finally) &star;</p>' +
+      '<img src="https://deno.land/logo.svg" width="150" height="150">',
+    headers: new Headers({ 'Content-Type': 'text/html' }),
+  });
+
+  app.get("/trailid/:trailid", async function ({
     req,
     res,
-}: {
+  }: {
     req: { id: string };
     res: any;
-}) : Promise<void> {
+  }): Promise<void> {
 
     console.log("Das ist req", req);
     console.log("Das ist req.id", req.id);
     const trail = await trails.find({ "_id": new Bson.ObjectID(req.id) }, { noCursorTimeout: false }).toArray();
 
-    if(trail) {
-        res.status = 200;
-        res.body = {
-            success: true,
-            data: trail,
-        };
+    if (trail) {
+      res.status = 200;
+      res.body = {
+        success: true,
+        data: trail,
+      };
     } else {
-        res.status = 404;
-        res.body = {
-            success: false,
-            msg: "No trail found",
-        };
+      res.status = 404;
+      res.body = {
+        success: false,
+        msg: "No trail found",
+      };
     }
-});
+  });
 
-app.get("/alltrails", async function (req, res) {
+  app.get("/alltrails", async function (req, res) {
     res.send(await trails.find({}, { noCursorTimeout: false }).toArray())
-});
+  });
 
-app.get("/search", async function (req, res) {
+  app.get("/search", async function (req, res) {
     const trailService = new TrailService();
-    let searchParameters = trailService.findACoolTrail({ 
-        trailId: req.query.trailid, 
-        length: req.query.length, 
-        title: req.query.title, 
-        rating: req.query.rating,
-        coordinates: req.query.coordinates });
+    let searchParameters = trailService.findACoolTrail({
+      trailId: req.query.trailid,
+      length: req.query.length,
+      title: req.query.title,
+      rating: req.query.rating,
+      coordinates: req.query.coordinates
+    });
     let searchQuery = JSON.stringify(searchParameters);
     console.log(searchQuery);
-    res.send(await trails.find({searchQuery}, {noCursorTimeout: false }));
+    res.send(await trails.find({ searchQuery }, { noCursorTimeout: false }));
     /* result 
     correct string is passed, but is not correctly formatted for search in Mongo
     */
-});
+  });
 
-app.set("/addTrail", async ({
+  app.set("/addTrail", async ({
     req, res,
   }: {
     req: any; res: any;
   }): Promise<void> => {
     try {
-      if(!req.hasBody) {
+      if (!req.hasBody) {
         res.status = 400;
         res.body = {
           success: false,
@@ -86,7 +97,7 @@ app.set("/addTrail", async ({
           data: trail,
         };
       }
-    } catch(err) {
+    } catch (err) {
       res.body = {
         success: false,
         msg: err.toString(),
@@ -94,7 +105,7 @@ app.set("/addTrail", async ({
     }
   });
 
-app.delete("/deleteTrail", async function({
+  app.delete("/deleteTrail", async function ({
     req, res
   }: {
     req: { id: string; }; res: any;
@@ -106,7 +117,7 @@ app.delete("/deleteTrail", async function({
         success: true,
         msg: "Trail deleted",
       };
-    } catch(err) {
+    } catch (err) {
       res.body = {
         success: false,
         msg: err.toString(),
@@ -114,7 +125,9 @@ app.delete("/deleteTrail", async function({
     }
   });
 
-app.listen(
-    {port: argPort ?? DEFAULT_PORT},
-    () => console.log(`Server has started on http://localhost:${argPort} 🚀`),
-);
+  app.listen(
+    { port: port ?? DEFAULT_PORT },
+    () => console.log(`Server has started on http://localhost:${port} 🚀`),
+  );
+}
+
