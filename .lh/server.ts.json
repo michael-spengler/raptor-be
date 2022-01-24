@@ -1,0 +1,26 @@
+{
+    "sourceFile": "server.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1643018782999,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1643018867703,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { Application } from \"https://deno.land/x/oak/mod.ts\";\n import router from \"./routes.ts\";\n \n-const PORT = Deno.env.get(\"PORT\") || '8080';\n+const PORT = Deno.env.get(\"PORT\");\n \n const app = new Application();\n \n app.use(router.routes());\n"
+                },
+                {
+                    "date": 1643019537545,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,12 @@\n import { Application } from \"https://deno.land/x/oak/mod.ts\";\n import router from \"./routes.ts\";\n+import { parse } from 'https://deno.land/std/flags/mod.ts';\n \n-const PORT = Deno.env.get(\"PORT\");\n+const { args } = Deno;\n+const DEFAULT_PORT = 8000;\n+const PORT = parse(args).port;\n+//const PORT : number  = +Deno.env.get(\"PORT\");\n \n const app = new Application();\n \n app.use(router.routes());\n"
+                }
+            ],
+            "date": 1643018782999,
+            "name": "Commit-0",
+            "content": "import { Application } from \"https://deno.land/x/oak/mod.ts\";\nimport router from \"./routes.ts\";\n\nconst PORT = Deno.env.get(\"PORT\") || '8080';\n\nconst app = new Application();\n\napp.use(router.routes());\napp.use(router.allowedMethods());\n\nconsole.log(`Server started on Port:${PORT} 🚀`);\n\nawait app.listen({ port: PORT });\n"
+        }
+    ]
+}
