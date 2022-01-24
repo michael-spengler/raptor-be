@@ -1,0 +1,58 @@
+{
+    "sourceFile": "index.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 10,
+            "patches": [
+                {
+                    "date": 1642842035612,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1642842069510,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { serve } from \"https://deno.land/std@0.57.0/http/server.ts\";\n+import { serve } from \"https://deno.land/std@0.119.0/http/server.ts\";\n \n const s = serve({ port: 8000 });\n \n for await (const req of s) {\n"
+                },
+                {
+                    "date": 1642842087847,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { serve } from \"https://deno.land/std@0.119.0/http/server.ts\";\n+import { serve } from \"https://deno.land/std@0.122.0/http/server.ts\";\n \n const s = serve({ port: 8000 });\n \n for await (const req of s) {\n"
+                },
+                {
+                    "date": 1642842294526,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,12 @@\n-import { serve } from \"https://deno.land/std@0.122.0/http/server.ts\";\n+import { serve } from 'https://deno.land/std@0.74.0/http/app.ts';\n \n-const s = serve({ port: 8000 });\n+// Use PORT from environment or fallback to 8000\n+const port = parseInt(Deno.env.get('PORT') ?? '8000');\n+const s = serve({ port });\n \n+console.log(`Listening on :${port}`);\n+\n+// Respond to each request with a \"Hello World!\" HTML page\n for await (const req of s) {\n-    req.respond({ body: \"Hello World\\n\" });\n+    req.respond({ body: 'Hello World!' });\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1642842310383,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { serve } from 'https://deno.land/std@0.74.0/http/app.ts';\n+import { serve } from 'https://deno.land/std@0.122.0/http/app.ts';\n \n // Use PORT from environment or fallback to 8000\n const port = parseInt(Deno.env.get('PORT') ?? '8000');\n const s = serve({ port });\n"
+                },
+                {
+                    "date": 1642842340689,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { serve } from 'https://deno.land/std@0.122.0/http/app.ts';\n+import { serve } from \"https://deno.land/std@0.122.0/http/server.ts\";\n \n // Use PORT from environment or fallback to 8000\n const port = parseInt(Deno.env.get('PORT') ?? '8000');\n const s = serve({ port });\n"
+                },
+                {
+                    "date": 1642842514369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,13 @@\n import { serve } from \"https://deno.land/std@0.122.0/http/server.ts\";\n \n-// Use PORT from environment or fallback to 8000\n-const port = parseInt(Deno.env.get('PORT') ?? '8000');\n-const s = serve({ port });\n+const port = 8080;\n \n-console.log(`Listening on :${port}`);\n+const handler = (request: Request): Response => {\n+    let body = \"Your user-agent is:\\n\\n\";\n+    body += request.headers.get(\"user-agent\") || \"Unknown\";\n \n\\ No newline at end of file\n-// Respond to each request with a \"Hello World!\" HTML page\n-for await (const req of s) {\n-    req.respond({ body: 'Hello World!' });\n-}\n+    return new Response(body, { status: 200 });\n+};\n+\n+console.log(`HTTP webserver running. Access it at: http://localhost:${8080}/`);\n+await serve(handler, { port });\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1642842525313,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,6 +8,6 @@\n \n     return new Response(body, { status: 200 });\n };\n \n-console.log(`HTTP webserver running. Access it at: http://localhost:${8080}/`);\n+console.log(`HTTP webserver running. Access it at: http://localhost:${port}/`);\n await serve(handler, { port });\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1642844419561,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,34 @@\n-import { serve } from \"https://deno.land/std@0.122.0/http/server.ts\";\n-\n const port = 8080;\n \n-const handler = (request: Request): Response => {\n-    let body = \"Your user-agent is:\\n\\n\";\n-    body += request.headers.get(\"user-agent\") || \"Unknown\";\n+// Start listening on port 8080 of localhost.\n+const server = Deno.listen({ port: port });\n+console.log(`HTTP webserver running.  Access it at:  http://localhost:${port}/`);\n \n-    return new Response(body, { status: 200 });\n-};\n\\ No newline at end of file\n+// Connections to the server will be yielded up as an async iterable.\n+for await (const conn of server) {\n+    // In order to not be blocking, we need to handle each connection individually\n+    // without awaiting the function\n+    serveHttp(conn);\n+}\n \n-console.log(`HTTP webserver running. Access it at: http://localhost:${port}/`);\n-await serve(handler, { port });\n+async function serveHttp(conn: Deno.Conn) {\n+    // This \"upgrades\" a network connection into an HTTP connection.\n+    const httpConn = Deno.serveHttp(conn);\n+    // Each request sent over the HTTP connection will be yielded as an async\n+    // iterator from the HTTP connection.\n+    for await (const requestEvent of httpConn) {\n+        // The native HTTP server uses the web standard `Request` and `Response`\n+        // objects.\n+        const body = `Your user-agent is:\\n\\n${requestEvent.request.headers.get(\n+            \"user-agent\",\n+        ) ?? \"Unknown\"\n+            }`;\n+        // The requestEvent's `.respondWith()` method is how we send the response\n+        // back to the client.\n+        requestEvent.respondWith(\n+            new Response(body, {\n+                status: 200,\n+            }),\n+        );\n+    }\n+}\n"
+                },
+                {
+                    "date": 1642844606438,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+import { opine } from \"https://deno.land/x/opine@2.1.1/mod.ts\";\n+\n+const DEFAULT_PORT = 5000;\n const port = 8080;\n \n // Start listening on port 8080 of localhost.\n const server = Deno.listen({ port: port });\n@@ -31,4 +34,114 @@\n             }),\n         );\n     }\n }\n+\n+const app = opine();\n+\n+\n+app.get(\"/welcome\", async function welcome(req, res) {\n+    res.send(\"Hello from the raptor-trails backend\")\n+});\n+\n+// app.get(\"/trailid/:trailid\", async function ({\n+//   req,\n+//   res,\n+// }: {\n+//   req: { id: string };\n+//   res: any;\n+// }): Promise<void> {\n+\n+//   console.log(\"Das ist req\", req);\n+//   console.log(\"Das ist req.id\", req.id);\n+//   const trail = await trails.find({ \"_id\": new Bson.ObjectID(req.id) }, { noCursorTimeout: false }).toArray();\n+\n+//   if (trail) {\n+//     res.status = 200;\n+//     res.body = {\n+//       success: true,\n+//       data: trail,\n+//     };\n+//   } else {\n+//     res.status = 404;\n+//     res.body = {\n+//       success: false,\n+//       msg: \"No trail found\",\n+//     };\n+//   }\n+// });\n+\n+// app.get(\"/alltrails\", async function (req, res) {\n+//   res.send(await trails.find({}, { noCursorTimeout: false }).toArray())\n+// });\n+\n+// app.get(\"/search\", async function (req, res) {\n+//   const trailService = new TrailService();\n+//   let searchParameters = trailService.findACoolTrail({\n+//     trailId: req.query.trailid,\n+//     length: req.query.length,\n+//     title: req.query.title,\n+//     rating: req.query.rating,\n+//     coordinates: req.query.coordinates\n+//   });\n+//   let searchQuery = JSON.stringify(searchParameters);\n+//   console.log(searchQuery);\n+//   res.send(await trails.find({ searchQuery }, { noCursorTimeout: false }));\n+//   /* result \n+//   correct string is passed, but is not correctly formatted for search in Mongo\n+//   */\n+// });\n+\n+// app.set(\"/addTrail\", async ({\n+//   req, res,\n+// }: {\n+//   req: any; res: any;\n+// }): Promise<void> => {\n+//   try {\n+//     if (!req.hasBody) {\n+//       res.status = 400;\n+//       res.body = {\n+//         success: false,\n+//         msg: \"No Data\",\n+//       };\n+//     } else {\n+//       const body = await req.body();\n+//       const trail = await body.value;\n+//       await trails.insertOne(trail);\n+//       res.status = 201;\n+//       res.body = {\n+//         success: true,\n+//         data: trail,\n+//       };\n+//     }\n+//   } catch (err) {\n+//     res.body = {\n+//       success: false,\n+//       msg: err.toString(),\n+//     };\n+//   }\n+// });\n+\n+// app.delete(\"/deleteTrail\", async function ({\n+//   req, res\n+// }: {\n+//   req: { id: string; }; res: any;\n+// }): Promise<void> {\n+//   try {\n+//     await trails.deleteOne({ $oid: req.id });\n+//     res.status = 201;\n+//     res.body = {\n+//       success: true,\n+//       msg: \"Trail deleted\",\n+//     };\n+//   } catch (err) {\n+//     res.body = {\n+//       success: false,\n+//       msg: err.toString(),\n+//     };\n+//   }\n+// });\n+\n+app.listen(\n+    { port: port ?? DEFAULT_PORT },\n+    () => console.log(`Server has started on http://localhost:${port} 🚀`),\n+);\n"
+                },
+                {
+                    "date": 1642844814660,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,4 @@\n-import { opine } from \"https://deno.land/x/opine@2.1.1/mod.ts\";\n-\n const DEFAULT_PORT = 5000;\n const port = 8080;\n \n // Start listening on port 8080 of localhost.\n@@ -35,15 +33,8 @@\n         );\n     }\n }\n \n-const app = opine();\n-\n-\n-app.get(\"/welcome\", async function welcome(req, res) {\n-    res.send(\"Hello from the raptor-trails backend\")\n-});\n-\n // app.get(\"/trailid/:trailid\", async function ({\n //   req,\n //   res,\n // }: {\n"
+                }
+            ],
+            "date": 1642842035612,
+            "name": "Commit-0",
+            "content": "import { serve } from \"https://deno.land/std@0.57.0/http/server.ts\";\n\nconst s = serve({ port: 8000 });\n\nfor await (const req of s) {\n    req.respond({ body: \"Hello World\\n\" });\n}"
+        }
+    ]
+}

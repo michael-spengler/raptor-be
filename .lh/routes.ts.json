@@ -1,0 +1,18 @@
+{
+    "sourceFile": "routes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1643017875055,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1643017875055,
+            "name": "Commit-0",
+            "content": "import { Router } from \"https://deno.land/x/oak/mod.ts\";\n\n// importing the const from the controllers file, otherwise they don't appear below\nimport {\n  addTrail,\n  getTrails,\n  getTrail,\n  searchTrail,\n  updateTrail,\n  deleteTrail,\n} from \"./controllers/trails.ts\"\n\nconst router = new Router();\n\nrouter\n  .get(\"/api/trail\", getTrails) // Get all trails\n  .get(\"/api/trail/:id\", getTrail) // Get one trail of trailID: id\n  .get(\"/api/trails/searchKeys\", searchTrail) // Get some trails by giving search Keys as queries\n  .post(\"/api/trail\", addTrail) // Add a trail\n  .put(\"/api/trail/:id\", updateTrail) // Update a trail\n  .delete(\"/api/trail/:id\", deleteTrail); // Delete a trail\n\nexport default router;\n"
+        }
+    ]
+}
