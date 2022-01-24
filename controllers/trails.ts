@@ -12,38 +12,6 @@ const getTrails = async ({ response }: { response: any }) => {
     if (allTrails) {
       response.status = 200;
       response.body = allTrails
-      // response.body = {
-      //   success: true,
-      //   data: allTrails,
-      // };
-    } else {
-      response.status = 500;
-      response.body = {
-        success: false,
-        msg: "Internal Server Error",
-      };
-    }
-  } catch (err) {
-    response.body = {
-      success: false,
-      msg: err.toString(),
-    };
-  }
-};
-
-async function searchTrail(params : any , response :any) {
-  try {
-    console.log("I'm in the try statement.")
-    const trailService = new TrailHelper()
-    console.log('Created trailService')
-    // const searchQuery = trailService.parseSearchKeys({ length: params.query.length, title: params.query.title, rating: params.query.rating })
-    // console.log('Succesfully parsed searchKeys:')
-    // console.log(searchQuery)
-    const allTrails = await trails.find({"title" : "testtrail"}, { noCursorTimeout: false }).toArray();
-    console.log('I searched for Trails and found this:')
-    console.log(allTrails)
-    if (allTrails) {
-      response.status = 200;
       response.body = {
         success: true,
         data: allTrails,
@@ -61,6 +29,23 @@ async function searchTrail(params : any , response :any) {
       msg: err.toString(),
     };
   }
+};
+
+async function searchTrail(req: any, res: any) {
+  const trailService = new TrailHelper();
+  let searchParameters = trailService.parseSearchKeys({
+    trailId: req.query.trailid,
+    length: req.query.length,
+    title: req.query.title,
+    rating: req.query.rating,
+    coordinates: req.query.coordinates
+  });
+  let searchQuery = JSON.stringify(searchParameters);
+  console.log(searchQuery);
+  res.send(await trails.find({ searchQuery }, { noCursorTimeout: false }));
+  /* result 
+  correct string is passed, but is not correctly formatted for search in Mongo
+  */
 };
 
 // @description: GET single trail

@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1643017875055,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1643018093620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,12 +12,12 @@\n \n const router = new Router();\n \n router\n-  .get(\"/api/trail\", getTrails) // Get all trails\n-  .get(\"/api/trail/:id\", getTrail) // Get one trail of trailID: id\n-  .get(\"/api/trails/searchKeys\", searchTrail) // Get some trails by giving search Keys as queries\n-  .post(\"/api/trail\", addTrail) // Add a trail\n-  .put(\"/api/trail/:id\", updateTrail) // Update a trail\n-  .delete(\"/api/trail/:id\", deleteTrail); // Delete a trail\n+  .get(\"/trail\", getTrails) // Get all trails\n+  .get(\"/trail/:id\", getTrail) // Get one trail of trailID: id\n+  .get(\"/trails/searchKeys\", searchTrail) // Get some trails by giving search Keys as queries\n+  .post(\"/trail\", addTrail) // Add a trail\n+  .put(\"/trail/:id\", updateTrail) // Update a trail\n+  .delete(\"/trail/:id\", deleteTrail); // Delete a trail\n \n export default router;\n"
+                },
+                {
+                    "date": 1643018134089,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n \n const router = new Router();\n \n router\n-  .get(\"/trail\", getTrails) // Get all trails\n+  .get(\"/alltrails\", getTrails) // Get all trails\n   .get(\"/trail/:id\", getTrail) // Get one trail of trailID: id\n   .get(\"/trails/searchKeys\", searchTrail) // Get some trails by giving search Keys as queries\n   .post(\"/trail\", addTrail) // Add a trail\n   .put(\"/trail/:id\", updateTrail) // Update a trail\n"
                 }
             ],
             "date": 1643017875055,

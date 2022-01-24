@@ -13,11 +13,11 @@ import {
 const router = new Router();
 
 router
-  .get("/api/trail", getTrails) // Get all trails
-  .get("/api/trail/:id", getTrail) // Get one trail of trailID: id
-  .get("/api/trails/searchKeys", searchTrail) // Get some trails by giving search Keys as queries
-  .post("/api/trail", addTrail) // Add a trail
-  .put("/api/trail/:id", updateTrail) // Update a trail
-  .delete("/api/trail/:id", deleteTrail); // Delete a trail
+  .get("/alltrails", getTrails) // Get all trails
+  .get("/trail/:id", getTrail) // Get one trail of trailID: id
+  .get("/trails/searchKeys", searchTrail) // Get some trails by giving search Keys as queries
+  .post("/trail", addTrail) // Add a trail
+  .put("/trail/:id", updateTrail) // Update a trail
+  .delete("/trail/:id", deleteTrail); // Delete a trail
 
 export default router;
