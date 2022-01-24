@@ -1,6 +1,5 @@
 // to run use the following cmd
 // deno run --allow-net --allow-read --allow-env app.ts
-
 import { opine } from "https://deno.land/x/opine@2.1.1/mod.ts";
 import { TrailService } from "./TrailService.ts";
 import trails from "./db.ts";
@@ -13,7 +12,7 @@ import { parse } from 'https://deno.land/std/flags/mod.ts';
 const { args } = Deno;
 const DEFAULT_PORT = 3000;
 
-const port = parse(args).port;
+const PORT = parse(args).port;
 
 const app = opine();
 
@@ -49,9 +48,9 @@ app.get("/welcome", async function welcome(req, res) {
 //   }
 // });
 
-// app.get("/alltrails", async function (req, res) {
-//   res.send(await trails.find({}, { noCursorTimeout: false }).toArray())
-// });
+app.get("/alltrails", async function (req, res) {
+  res.send(await trails.find({}, { noCursorTimeout: false }).toArray())
+});
 
 // app.get("/search", async function (req, res) {
 //   const trailService = new TrailService();
@@ -70,35 +69,35 @@ app.get("/welcome", async function welcome(req, res) {
 //   */
 // });
 
-// app.set("/addTrail", async ({
-//   req, res,
-// }: {
-//   req: any; res: any;
-// }): Promise<void> => {
-//   try {
-//     if (!req.hasBody) {
-//       res.status = 400;
-//       res.body = {
-//         success: false,
-//         msg: "No Data",
-//       };
-//     } else {
-//       const body = await req.body();
-//       const trail = await body.value;
-//       await trails.insertOne(trail);
-//       res.status = 201;
-//       res.body = {
-//         success: true,
-//         data: trail,
-//       };
-//     }
-//   } catch (err) {
-//     res.body = {
-//       success: false,
-//       msg: err.toString(),
-//     };
-//   }
-// });
+app.set("/addTrail", async ({
+  req, res,
+}: {
+  req: any; res: any;
+}): Promise<void> => {
+  try {
+    if (!req.hasBody) {
+      res.status = 400;
+      res.body = {
+        success: false,
+        msg: "No Data",
+      };
+    } else {
+      const body = await req.body();
+      const trail = await body.value;
+      await trails.insertOne(trail);
+      res.status = 201;
+      res.body = {
+        success: true,
+        data: trail,
+      };
+    }
+  } catch (err) {
+    res.body = {
+      success: false,
+      msg: err.toString(),
+    };
+  }
+});
 
 // app.delete("/deleteTrail", async function ({
 //   req, res
@@ -121,8 +120,8 @@ app.get("/welcome", async function welcome(req, res) {
 // });
 
 app.listen(
-  { port: port ?? DEFAULT_PORT },
-  () => console.log(`Server has started on http://localhost:${port} 🚀`),
+  { port: PORT ?? DEFAULT_PORT },
+  () => console.log(`Server has started on http://localhost:${PORT} 🚀`),
 );
 
 
