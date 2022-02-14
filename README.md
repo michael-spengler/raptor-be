@@ -8,6 +8,8 @@ This is not the main project and has no frontend to see this visit our repositor
 ### Open-Source contributions
 As a part of the learning with Deno, Maximilian Graf published a module on Deno. This module is mainly for practicing contributions to Open-Source development but is planned to be supported in the future by him. You can find it [here](https://deno.land/x/array_summary@0.2), and the repo is also on [GitHub](https://github.com/maximilian-graf2019/statistics_summary)
 
+Pascal Breucker also published a module, that can be found on[GitHub](https://github.com/PB-flitze/BMI_Calculator) and [Deno](https://deno.land/x/bmi_calculator@v0.1).
+
 ### Hosting
 
 The hosting is done via [Heroku](https://dashboard.heroku.com/). You can find and access the API [here](https://raptor-be.herokuapp.com/)
