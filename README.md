@@ -12,6 +12,8 @@ Pascal Breucker also published a module, that can be found on[GitHub](https://gi
 
 Joshua Brenzinger also published a module, it can be found on [Github](https://github.com/j0si/promille_calculator) and [Deno](https://deno.land/x/promille_calculator@0.0.1.1).
 
+Luis Steinert also published a module that can be found on [Github](https://github.com/luistnrt/Sieve_of_Eratosthenes) and [Deno]( https://deno.land/x/eratosthenes_sieve@v1.0).
+
 ### Hosting
 
 The hosting is done via [Heroku](https://dashboard.heroku.com/). You can find and access the API [here](https://raptor-be.herokuapp.com/)
